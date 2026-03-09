@@ -160,11 +160,6 @@ def get_beacon_config(
         )
         public_ports.update(
             shared_utils.get_port_specs(
-                {constants.RPC_PORT_ID: public_ports_for_component[5]}
-            )
-        )
-        public_ports.update(
-            shared_utils.get_port_specs(
                 {constants.PROFILING_PORT_ID: public_ports_for_component[6]}
             )
         )
@@ -191,7 +186,6 @@ def get_beacon_config(
         constants.HTTP_PORT_ID: BEACON_HTTP_PORT_NUM,
         constants.METRICS_PORT_ID: BEACON_MONITORING_PORT_NUM,
         constants.QUIC_DISCOVERY_PORT_ID: discovery_port_quic,
-        constants.RPC_PORT_ID: RPC_PORT_NUM,
         constants.PROFILING_PORT_ID: PROFILING_PORT_NUM,
     }
     # Disable port checks if skip_start is enabled
@@ -205,8 +199,6 @@ def get_beacon_config(
         "--accept-terms-of-use=true",  # it's mandatory in order to run the node
         "--datadir=" + BEACON_DATA_DIRPATH_ON_SERVICE_CONTAINER,
         "--execution-endpoint=" + EXECUTION_ENGINE_ENDPOINT,
-        "--rpc-host=0.0.0.0",
-        "--rpc-port={0}".format(RPC_PORT_NUM),
         "--http-host=0.0.0.0",
         "--http-cors-domain=*",
         "--http-port={0}".format(BEACON_HTTP_PORT_NUM),
@@ -399,7 +391,7 @@ def get_cl_context(
     beacon_http_port = service.ports[constants.HTTP_PORT_ID]
 
     beacon_http_url = "http://{0}:{1}".format(service.name, BEACON_HTTP_PORT_NUM)
-    beacon_grpc_url = "{0}:{1}".format(service.name, RPC_PORT_NUM)
+    beacon_grpc_url = ""
 
     # Skip HTTP requests if skip_start is enabled (service won't be running)
     if participant.skip_start:

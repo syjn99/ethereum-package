@@ -52,9 +52,9 @@ def get_config(
         # ^^^^^^^^^^^^^^^^^^^ METRICS CONFIG ^^^^^^^^^^^^^^^^^^^^^
     ]
 
-    # Only add RPC provider if we're not using a blobber (blobber doesn't proxy RPC)
+    # Only add RPC provider if gRPC URL is available and we're not using a blobber
     # Blobber uses port 5000, so check if that's in the URL
-    if ":5000" not in beacon_http_urls[0]:
+    if cl_context.beacon_grpc_url and ":5000" not in beacon_http_urls[0]:
         cmd.append("--beacon-rpc-provider=" + cl_context.beacon_grpc_url)
 
     if remote_signer_context == None:
@@ -83,15 +83,6 @@ def get_config(
         "--http-host=0.0.0.0",
         "--keymanager-token-file=" + constants.KEYMANAGER_MOUNT_PATH_ON_CONTAINER,
     ]
-
-    # Check if we're using a blobber by checking for port 5000
-    is_using_blobber = ":5000" in beacon_http_urls[0]
-
-    if cl_context.client_name != constants.CL_TYPE.prysm or is_using_blobber:
-        # Use Beacon API if:
-        # 1. Prysm VC wants to connect to a non-Prysm BN, OR
-        # 2. Blobber is enabled (since blobber only proxies REST, not RPC)
-        cmd.append("--enable-beacon-rest-api")
 
     if len(participant.vc_extra_params) > 0:
         # this is a repeated<proto type>, we convert it into Starlark
